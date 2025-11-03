@@ -63,7 +63,7 @@ int main() {
             currentPos = 199;
         }
 
-        // Jump to 0 - THIS IS COUNTED!
+        // Jump to 0 (counted )
         int jumpDist = 199;
         cout << left << setw(10) << currentPos << setw(15) << 0 << jumpDist << "\n";
         totalTrackTravelled += jumpDist;
@@ -100,7 +100,7 @@ int main() {
             currentPos = 0;
         }
 
-        // Jump to 199 - THIS IS COUNTED!
+        // Jump to 199 (counted)
         int jumpDist = 199;
         cout << left << setw(10) << currentPos << setw(15) << 199 << jumpDist << "\n";
         totalTrackTravelled += jumpDist;
