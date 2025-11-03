@@ -1,143 +1,127 @@
 #include <iostream>
-#include <vector>       
-#include <string>       
-#include <algorithm>    
-#include <cmath>       
-#include <iomanip>      
-
-const int MIN_TRACK = 0;
-const int MAX_TRACK = 199;
-
-/**
- * @brief 
- * @param path 
- */
-void printSimulationTable(const std::vector<int>& path) {
-    int totalDistance = 0;
-
-    // print the table 
-    std::cout << "\n" << std::setw(10) << "Start"
-              << std::setw(10) << "Finished"
-              << std::setw(20) << "Track Travelled" << std::endl;
-    std::cout << "========================================" << std::endl;
-
-    
-    for (size_t i = 0; i < path.size() - 1; ++i) {
-        int start = path[i];
-        int end = path[i + 1];
-        int distance = std::abs(end - start);
-        totalDistance += distance;
-
-        std::cout << std::setw(10) << start
-                  << std::setw(10) << end
-                  << std::setw(20) << distance << std::endl;
-    }
-
-    // print final total 
-    std::cout << "========================================" << std::endl;
-    std::cout << "Total Track Travelled: " << totalDistance << std::endl;
-}
-
-/**
- * @brief 
- * @param str 
- * @return 
- */
-std::string toUpper(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-    return str;
-}
+#include <vector>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
 
 int main() {
-    int initialPosition;
-    std::string direction;
-    std::vector<int> requests;
-    std::vector<int> path; 
+    int initialPos, n;
+    string direction;
+    vector<int> requests;
 
-    // user inputs 
-    std::cout << "Enter the initial arm position (0-199): ";
-    std::cin >> initialPosition;
+    cout << "Enter initial arm position (0-199): ";
+    cin >> initialPos;
 
-    std::cout << "Enter the arm direction (UP or DOWN): ";
-    std::cin >> direction;
-    direction = toUpper(direction);
+    cout << "Enter direction (UP/DOWN): ";
+    cin >> direction;
+    transform(direction.begin(), direction.end(), direction.begin(), ::toupper);
 
-    std::cout << "Enter track requests (e.g., 85 10 37). Enter -1 to finish:" << std::endl;
-    int req;
-    while (std::cin >> req && req != -1) {
-        if (req >= MIN_TRACK && req <= MAX_TRACK) {
-            requests.push_back(req);
-        } else {
-            std::cout << "Ignoring invalid track " << req << ". Must be between 0 and 199." << std::endl;
-        }
-    }
-    
+    cout << "Enter number of track requests: ";
+    cin >> n;
 
-
-    // sort requests in ascending order
-    std::sort(requests.begin(), requests.end());
-
-    // split requests into "down" or"up"
-    std::vector<int> downRequests;
-    std::vector<int> upRequests;
-
-    for (int r : requests) {
-        if (r < initialPosition) {
-            downRequests.push_back(r);
-        } else {
-            upRequests.push_back(r);
-        }
+    cout << "Enter track requests: ";
+    for (int i = 0; i < n; i++) {
+        int track;
+        cin >> track;
+        requests.push_back(track);
     }
 
-    path.push_back(initialPosition);
+    sort(requests.begin(), requests.end());
 
-    // c-scan logic 
+    cout << "\nSorted requests: ";
+    for (int req : requests) cout << req << " ";
+    cout << "\n\n";
+
+    cout << "=========================================\n";
+    cout << "Initial Arm position: " << initialPos << "\tDirection: " << direction << "\n";
+    cout << "=========================================\n\n";
+
+    cout << left << setw(10) << "Start" << setw(15) << "Finished" << "Track Travelled\n";
+    cout << "-------------------------------------------\n";
+
+    int currentPos = initialPos;
+    int totalTrackTravelled = 0;
+    vector<int> serviceOrder;
+
     if (direction == "UP") {
-        
-        for (int r : upRequests) {
-            path.push_back(r);
+        // service requests >= head
+        for (int req : requests) {
+            if (req >= currentPos) {
+                int travel = abs(req - currentPos);
+                cout << left << setw(10) << currentPos << setw(15) << req << travel << "\n";
+                totalTrackTravelled += travel;
+                currentPos = req;
+                serviceOrder.push_back(req);
+            }
         }
 
-        path.push_back(MAX_TRACK);
-        
-
-        path.push_back(MIN_TRACK);
-
-
-        for (int r : downRequests) {
-            path.push_back(r);
-        }
-    } 
-    else if (direction == "DOWN") {
-        
-        std::sort(downRequests.rbegin(), downRequests.rend());
-        
-        
-        for (int r : downRequests) {
-            path.push_back(r);
+        // move to 199
+        if (currentPos != 199) {
+            int travel = 199 - currentPos;
+            cout << left << setw(10) << currentPos << setw(15) << 199 << travel << "\n";
+            totalTrackTravelled += travel;
+            currentPos = 199;
         }
 
-       
-        path.push_back(MIN_TRACK);
+        // Jump to 0 - THIS IS COUNTED!
+        int jumpDist = 199;
+        cout << left << setw(10) << currentPos << setw(15) << 0 << jumpDist << "\n";
+        totalTrackTravelled += jumpDist;
+        currentPos = 0;
 
-       
-        path.push_back(MAX_TRACK);
-
-       
-        std::sort(upRequests.rbegin(), upRequests.rend());
-
-       
-        for (int r : upRequests) {
-            path.push_back(r);
+        // service remaining (less than head)
+        for (int req : requests) {
+            if (req < initialPos) {
+                int travel = abs(req - currentPos);
+                cout << left << setw(10) << currentPos << setw(15) << req << travel << "\n";
+                totalTrackTravelled += travel;
+                currentPos = req;
+                serviceOrder.push_back(req);
+            }
         }
-    } 
-    else {
-        std::cout << "Invalid direction. Please enter UP or DOWN." << std::endl;
-        return 1; 
+
+    } else { // DOWN
+        // service requests <= head (descending)
+        for (int i = requests.size() - 1; i >= 0; i--) {
+            if (requests[i] <= currentPos) {
+                int travel = abs(currentPos - requests[i]);
+                cout << left << setw(10) << currentPos << setw(15) << requests[i] << travel << "\n";
+                totalTrackTravelled += travel;
+                currentPos = requests[i];
+                serviceOrder.push_back(requests[i]);
+            }
+        }
+
+        // move to 0
+        if (currentPos != 0) {
+            int travel = currentPos;
+            cout << left << setw(10) << currentPos << setw(15) << 0 << travel << "\n";
+            totalTrackTravelled += travel;
+            currentPos = 0;
+        }
+
+        // Jump to 199 - THIS IS COUNTED!
+        int jumpDist = 199;
+        cout << left << setw(10) << currentPos << setw(15) << 199 << jumpDist << "\n";
+        totalTrackTravelled += jumpDist;
+        currentPos = 199;
+
+        // service remaining (greater than head)
+        for (int i = requests.size() - 1; i >= 0; i--) {
+            if (requests[i] > initialPos) {
+                int travel = abs(currentPos - requests[i]);
+                cout << left << setw(10) << currentPos << setw(15) << requests[i] << travel << "\n";
+                totalTrackTravelled += travel;
+                currentPos = requests[i];
+                serviceOrder.push_back(requests[i]);
+            }
+        }
     }
 
-    // print final results
-    printSimulationTable(path);
+    cout << "\nTotal Track Travelled: " << totalTrackTravelled << "\n\n";
+    cout << "Service Order: ";
+    for (int track : serviceOrder) cout << track << " ";
+    cout << "\n";
 
-    return 0; 
+    return 0;
 }
