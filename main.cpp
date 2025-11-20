@@ -1,30 +1,83 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
+#include <string>
+
 using namespace std;
+
+// Validation function that returns true if valid
+bool validateInput(int value, int min, int max, const string& fieldName) {
+    if (value < min || value > max) {
+        cout << "Error: " << fieldName << " must be between " << min << " and " << max << endl;
+        return false;
+    }
+    return true;
+}
 
 int main() {
     int initialPos, n;
     string direction;
     vector<int> requests;
 
-    cout << "Enter initial arm position (0-199): ";
-    cin >> initialPos;
+    // Get initial arm position with validation and retry
+    while (true) {
+        cout << "Enter initial arm position (0-199): ";
+        cin >> initialPos;
+        
+        if (validateInput(initialPos, 0, 199, "Initial arm position")) {
+            break; // Valid input, exit loop
+        }
+        cout << "Please try again.\n";
+    }
 
-    cout << "Enter direction (UP/DOWN): ";
-    cin >> direction;
-    transform(direction.begin(), direction.end(), direction.begin(), ::toupper);
+    // Get direction with validation and retry
+    while (true) {
+        cout << "Enter direction (UP/DOWN): ";
+        cin >> direction;
+        transform(direction.begin(), direction.end(), direction.begin(), ::toupper);
+        
+        if (direction == "UP" || direction == "DOWN") {
+            break; // Valid input, exit loop
+        }
+        cout << "Error: Direction must be UP or DOWN\n";
+        cout << "Please try again.\n";
+    }
 
-    cout << "Enter number of track requests: ";
-    cin >> n;
+    // Get number of requests with validation and retry
+    while (true) {
+        cout << "Enter number of track requests: ";
+        cin >> n;
+        
+        if (validateInput(n, 1, 100, "Number of requests")) {
+            break; // Valid input, exit loop
+        }
+        cout << "Please try again.\n";
+    }
 
+    // Get track requests with validation
     cout << "Enter track requests: ";
-    for (int i = 0; i < n; i++) {
+    int i = 0;
+    while (i < n) {
         int track;
         cin >> track;
+        
+        if (!validateInput(track, 0, 199, "Track request")) {
+            cout << "Please enter a valid track number: ";
+            continue; // Ask for this track again
+        }
+        
+        // Check for duplicates
+        if (find(requests.begin(), requests.end(), track) != requests.end()) {
+            cout << "Warning: Duplicate track " << track << " ignored. Enter another: ";
+            continue; // Ask for another track
+        }
+        
         requests.push_back(track);
+        i++; // Only increment when we successfully add a track
     }
+
 
     sort(requests.begin(), requests.end());
 
