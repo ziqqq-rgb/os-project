@@ -80,7 +80,7 @@ int main() {
 
 
     sort(requests.begin(), requests.end());
-
+    cout << "Processing " << requests.size() << " unique track requests.\n";
     cout << "\nSorted requests: ";
     for (int req : requests) cout << req << " ";
     cout << "\n\n";
