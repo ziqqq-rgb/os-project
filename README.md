@@ -30,10 +30,6 @@ g++ -o disk_scheduler main.cpp
 - `OS Report.pdf` - The complete project report.
 - `Presentation.pdf` - The project Slides.
 
-## About the Algorithm
-
-C-SCAN is the Disk Scheduling algorithm that looks at the disk in circular list format. The arm of the disk moves in a single direction servicing the requests and once it has gone to the end it jumps to the other end and continues servicing requests. This method is better as it provides more uniform wait time. 
-
 ## Code Explanation:
 
 Variable Declaration : The program declares variables for initial head position (initialPos), number of requests (n), direction (direction), and a vector to store track requests.
@@ -66,4 +62,5 @@ DOWN Direction - Part 2 : After jumping to track 199, the algorithm services rem
 
 
 Track Movement Calculation : For each movement, the program calculates the absolute distance traveled, displays it, and adds it to the totalTrackTravelled counter, ensuring accurate total distance calculation including the circular jump. 
+
 
