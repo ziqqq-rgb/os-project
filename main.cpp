@@ -80,6 +80,7 @@ int main() {
 
 
     sort(requests.begin(), requests.end());
+    // After removing duplicates, display the number of unique requests.
     cout << "Processing " << requests.size() << " unique track requests.\n";
     cout << "\nSorted requests: ";
     for (int req : requests) cout << req << " ";
