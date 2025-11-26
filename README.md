@@ -1,7 +1,5 @@
 ﻿# os-project
 
-# OS Project - C-SCAN Disk Scheduling Simulator
-
 This is a C++ code demonstrating the **C-SCAN (Circular SCAN) disk scheduling algorithm** for a disk with 200 tracks (0-199). The code is for the TDB2043 Operating Systems course.
 
 ## Group Members
@@ -62,5 +60,6 @@ DOWN Direction - Part 2 : After jumping to track 199, the algorithm services rem
 
 
 Track Movement Calculation : For each movement, the program calculates the absolute distance traveled, displays it, and adds it to the totalTrackTravelled counter, ensuring accurate total distance calculation including the circular jump. 
+
 
 
